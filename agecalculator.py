@@ -8,7 +8,7 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("🎂 Smart Age & Life Analyzer")
+st.title("Smart Age & Life Analyzer")
 st.write("Calculate your exact age, birthday countdown, and generate your life timeline.")
 
 # -----------------------------
@@ -150,7 +150,18 @@ if st.button("🚀 Analyze My Age"):
         f"**{today.year}** ─── Current Age: "
         f"{age.years} 🎯"
     )
+  # Future milestones
+    milestones = [30, 40, 50, 60, 70, ]
 
+    for milestone_age in milestones:
+
+        milestone_year = birth_year + milestone_age
+
+        if milestone_year > today.year:
+            st.write(
+                f"**{milestone_year}** ─── "
+                f"Age {milestone_age} 🎯"
+            )
    
 
     # -----------------------------

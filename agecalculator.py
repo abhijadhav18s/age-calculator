@@ -40,12 +40,7 @@ if st.button("Check Age"):
 
 st.title("🕰️ Life Timeline Generator")
 
-dob = st.date_input(
-    "Enter your Date of Birth",
-    min_value=date(1900, 1, 1),
-    max_value=date.today(),
-    value=date(2000, 1, 1)
-)
+
 
 if st.button("Generate Timeline"):
 

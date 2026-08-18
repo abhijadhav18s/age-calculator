@@ -2,88 +2,236 @@ import streamlit as st
 from dateutil.relativedelta import relativedelta
 from datetime import date
 
-st.title(" Age Calculator")
+st.set_page_config(
+    page_title="Smart Age & Life Analyzer",
+    page_icon="🎂",
+    layout="centered"
+)
+
+st.title("🎂 Smart Age & Life Analyzer")
+st.write("Calculate your exact age, birthday countdown, and generate your life timeline.")
+
+# -----------------------------
+# DATE OF BIRTH
+# -----------------------------
 
 dob = st.date_input(
-    "Enter your DOB",
+    "📅 Enter your Date of Birth",
     min_value=date(1900, 1, 1),
     max_value=date.today(),
     value=date(2000, 1, 1)
 )
 
-if st.button("Check Age"):
+if st.button("🚀 Analyze My Age"):
+
     today = date.today()
+
+    # -----------------------------
+    # EXACT AGE
+    # -----------------------------
+
     age = relativedelta(today, dob)
 
     st.success(
-        f"You are {age.years} years, {age.months} months, and {age.days} days old."
+        f"🎉 You are {age.years} years, "
+        f"{age.months} months and {age.days} days old."
     )
 
-    # Birthday Countdown
-    next_birthday = date(today.year, dob.month, dob.day)
+    # -----------------------------
+    # TOTAL DAYS LIVED
+    # -----------------------------
+
+    total_days = (today - dob).days
+    total_hours = total_days * 24
+    total_minutes = total_hours * 60
+
+    st.subheader("📊 Your Life Statistics")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric("📅 Days Lived", f"{total_days:,}")
+        st.metric("⏰ Hours Lived", f"{total_hours:,}")
+
+    with col2:
+        st.metric("🗓️ Weeks Lived", f"{total_days // 7:,}")
+        st.metric("⏱️ Minutes Lived", f"{total_minutes:,}")
+
+    # -----------------------------
+    # BIRTHDAY COUNTDOWN
+    # -----------------------------
+
+    st.subheader("🎂 Birthday Countdown")
+
+    try:
+        next_birthday = date(today.year, dob.month, dob.day)
+    except ValueError:
+        # For February 29 birthdays
+        next_birthday = date(today.year, 2, 28)
 
     if next_birthday < today:
-        next_birthday = date(today.year + 1, dob.month, dob.day)
+
+        try:
+            next_birthday = date(
+                today.year + 1,
+                dob.month,
+                dob.day
+            )
+        except ValueError:
+            next_birthday = date(today.year + 1, 2, 28)
 
     days_left = (next_birthday - today).days
 
-    st.subheader("Birthday Countdown")
-
     if days_left == 0:
         st.balloons()
-        st.success("Happy Birthday! Have a fantastic day! ")
+        st.success("🥳 HAPPY BIRTHDAY! 🎂🎉")
     else:
-        st.info(f" Your next birthday is in **{days_left} days**.")
-        st.write(f" Next Birthday: **{next_birthday.strftime('%d %B %Y')}**")
+        st.info(
+            f"🎈 Your next birthday is in **{days_left} days**."
+        )
 
-#life timeline
+        st.write(
+            f"📅 Next Birthday: "
+            f"**{next_birthday.strftime('%d %B %Y')}**"
+        )
 
-st.title("🕰️ Life Timeline Generator")
+    # -----------------------------
+    # BIRTH DAY
+    # -----------------------------
 
+    st.subheader("📅 Your Birth Day")
 
+    birth_day_name = dob.strftime("%A")
 
-if st.button("Generate Timeline"):
+    st.write(
+        f"You were born on **{birth_day_name}**, "
+        f"{dob.strftime('%d %B %Y')}."
+    )
 
-    today = date.today()
+    # -----------------------------
+    # LIFE TIMELINE
+    # -----------------------------
+
+    st.subheader("🕰️ Your Life Timeline")
+
     birth_year = dob.year
-    current_age = relativedelta(today, dob).years
-
-    st.subheader("📜 Your Life Timeline")
 
     # Birth
-    st.write(f"**{birth_year}** ─── Born 👶")
+    st.write(
+        f"**{birth_year}** ─── Born 👶"
+    )
 
-    # School
+    # Started school
     school_year = birth_year + 6
-    st.write(f"**{school_year}** ─── Started School 🎒")
 
-    # Completed School
+    if school_year <= today.year:
+        st.write(
+            f"**{school_year}** ─── Started School 🎒"
+        )
+
+    # Completed school
     school_completion_year = birth_year + 18
-    st.write(f"**{school_completion_year}** ─── Completed School 🎓")
+
+    if school_completion_year <= today.year:
+        st.write(
+            f"**{school_completion_year}** ─── Completed School 🎓"
+        )
 
     # College
     college_year = birth_year + 18
-    st.write(f"**{college_year}** ─── Started College 🏫")
+
+    if college_year <= today.year:
+        st.write(
+            f"**{college_year}** ─── Started College 🏫"
+        )
 
     # Current age
-    st.write(f"**{today.year}** ─── Current Age: {current_age} 🎯")
+    st.write(
+        f"**{today.year}** ─── Current Age: "
+        f"{age.years} 🎯"
+    )
 
     # Future milestones
-    age_40_year = birth_year + 40
-    age_50_year = birth_year + 50
-    age_60_year = birth_year + 60
-    age_70_year = birth_year + 70
+    milestones = [30, 40, 50, 60, 70, 80, 90, 100]
 
-    if age_40_year > today.year:
-        st.write(f"**{age_40_year}** ─── Age 40 🎯")
+    for milestone_age in milestones:
 
-    if age_50_year > today.year:
-        st.write(f"**{age_50_year}** ─── Age 50 🎯")
+        milestone_year = birth_year + milestone_age
 
-    if age_60_year > today.year:
-        st.write(f"**{age_60_year}** ─── Age 60 🎯")
+        if milestone_year > today.year:
+            st.write(
+                f"**{milestone_year}** ─── "
+                f"Age {milestone_age} 🎯"
+            )
 
-    if age_70_year > today.year:
-        st.write(f"**{age_70_year}** ─── Age 70 🎯")
+    # -----------------------------
+    # LIFE PROGRESS
+    # -----------------------------
 
-    st.success("🎉 Your life timeline has been generated!")
+    st.subheader("📈 Life Progress")
+
+    lifespan = st.slider(
+        "Select estimated lifespan",
+        min_value=50,
+        max_value=120,
+        value=100
+    )
+
+    progress = min(age.years / lifespan, 1.0)
+    percentage = progress * 100
+
+    st.progress(progress)
+
+    st.write(
+        f"**{percentage:.1f}%** of a {lifespan}-year "
+        f"lifespan has been reached."
+    )
+
+    remaining_years = max(lifespan - age.years, 0)
+
+    st.info(
+        f"🌱 Approximate years remaining toward "
+        f"the selected {lifespan}-year milestone: "
+        f"**{remaining_years} years**."
+    )
+
+    # -----------------------------
+    # FUTURE AGE CALCULATOR
+    # -----------------------------
+
+    st.subheader("🔮 Future Age")
+
+    future_year = st.number_input(
+        "Enter a future year",
+        min_value=today.year,
+        max_value=2200,
+        value=today.year + 10,
+        step=1
+    )
+
+    future_age = future_year - birth_year
+
+    st.write(
+        f"🎯 In **{future_year}**, you will be approximately "
+        f"**{future_age} years old**."
+    )
+
+    # -----------------------------
+    # BIRTH YEAR SUMMARY
+    # -----------------------------
+
+    st.subheader("🌎 Birth Information")
+
+    st.write(f"👶 Birth Year: **{birth_year}**")
+    st.write(f"📅 Birth Date: **{dob.strftime('%d %B %Y')}**")
+    st.write(f"📆 Birth Day: **{birth_day_name}**")
+
+    # -----------------------------
+    # COMPLETION MESSAGE
+    # -----------------------------
+
+    st.markdown("---")
+
+    st.success(
+        "✨ Your complete Age & Life Timeline has been generated!"
+    )

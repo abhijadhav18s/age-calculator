@@ -4,11 +4,11 @@ from datetime import date
 
 st.set_page_config(
     page_title="Smart Age & Life Analyzer",
-    page_icon="🎂",
+    page_icon="",
     layout="centered"
 )
 
-st.title("🎂 Smart Age & Life Analyzer")
+st.title(" Smart Age & Life Analyzer")
 st.write("Calculate your exact age, birthday countdown, and generate your life timeline.")
 
 # -----------------------------
@@ -108,124 +108,143 @@ if st.button("🚀 Analyze My Age"):
         f"{dob.strftime('%d %B %Y')}."
     )
 
-    # -----------------------------
-    # LIFE TIMELINE
-    # -----------------------------
-
-    st.subheader("🕰️ Your Life Timeline")
-
-    birth_year = dob.year
-
-    # Birth
-    st.write(
-        f"**{birth_year}** ─── Born 👶"
-    )
-
-    # Started school
-    school_year = birth_year + 6
-
-    if school_year <= today.year:
-        st.write(
-            f"**{school_year}** ─── Started School 🎒"
-        )
-
-    # Completed school
-    school_completion_year = birth_year + 18
-
-    if school_completion_year <= today.year:
-        st.write(
-            f"**{school_completion_year}** ─── Completed School 🎓"
-        )
-
-    # College
-    college_year = birth_year + 18
-
-    if college_year <= today.year:
-        st.write(
-            f"**{college_year}** ─── Started College 🏫"
-        )
-
-    # Current age
-    st.write(
-        f"**{today.year}** ─── Current Age: "
-        f"{age.years} 🎯"
-    )
-
-    # Future milestones
-    milestones = [30, 40, 50, 60, 70, 80, 90, 100]
-
-    for milestone_age in milestones:
-
-        milestone_year = birth_year + milestone_age
-
-        if milestone_year > today.year:
-            st.write(
-                f"**{milestone_year}** ─── "
-                f"Age {milestone_age} 🎯"
-            )
-
-    # -----------------------------
-    # LIFE PROGRESS
-    # -----------------------------
-
     st.subheader("📈 Life Progress")
 
     lifespan = st.slider(
-        "Select estimated lifespan",
+        "🎯 Select your target lifespan",
         min_value=50,
         max_value=120,
-        value=100
+        value=100,
+        step=1
     )
 
-    progress = min(age.years / lifespan, 1.0)
-    percentage = progress * 100
+    # Exact number of days in selected lifespan
+    lifespan_end_date = date(
+        dob.year + lifespan,
+        dob.month,
+        dob.day
+    )
 
-    st.progress(progress)
+    total_lifespan_days = (
+        lifespan_end_date - dob
+    ).days
+
+    days_lived = (
+        today - dob
+    ).days
+
+    # Calculate percentage
+    life_percentage = (
+        days_lived / total_lifespan_days
+    ) * 100
+
+    # Keep percentage between 0 and 100
+    life_percentage = max(
+        0,
+        min(life_percentage, 100)
+    )
+
+    st.progress(
+        int(life_percentage)
+    )
 
     st.write(
-        f"**{percentage:.1f}%** of a {lifespan}-year "
-        f"lifespan has been reached."
+        f"### {life_percentage:.2f}%"
     )
 
-    remaining_years = max(lifespan - age.years, 0)
-
-    st.info(
-        f"🌱 Approximate years remaining toward "
-        f"the selected {lifespan}-year milestone: "
-        f"**{remaining_years} years**."
+    st.write(
+        f"You have completed approximately "
+        f"**{life_percentage:.2f}%** of your selected "
+        f"{lifespan}-year lifespan."
     )
 
-    # -----------------------------
+    if today < lifespan_end_date:
+
+        remaining_days = (
+            lifespan_end_date - today
+        ).days
+
+        remaining_age = relativedelta(
+            lifespan_end_date,
+            today
+        )
+
+        st.info(
+            f"🌱 Approximately **{remaining_age.years} years, "
+            f"{remaining_age.months} months and "
+            f"{remaining_age.days} days** remaining "
+            f"until age {lifespan}."
+        )
+
+        st.write(
+            f"📅 Target date: "
+            f"**{lifespan_end_date.strftime('%d %B %Y')}**"
+        )
+
+    else:
+
+        st.success(
+            f"🎉 You have already reached your selected "
+            f"{lifespan}-year milestone."
+        )
+
+    # --------------------------------------------------
     # FUTURE AGE CALCULATOR
-    # -----------------------------
+    # --------------------------------------------------
 
-    st.subheader("🔮 Future Age")
+    st.subheader("🔮 Future Age Calculator")
 
     future_year = st.number_input(
-        "Enter a future year",
+        "📅 Enter the year you want to check",
         min_value=today.year,
         max_value=2200,
         value=today.year + 10,
         step=1
     )
 
-    future_age = future_year - birth_year
-
-    st.write(
-        f"🎯 In **{future_year}**, you will be approximately "
-        f"**{future_age} years old**."
+    # Calculate exact future date
+    future_date = date(
+        int(future_year),
+        dob.month,
+        dob.day
     )
 
-    # -----------------------------
-    # BIRTH YEAR SUMMARY
-    # -----------------------------
+    # Calculate exact age on that date
+    future_age = relativedelta(
+        future_date,
+        dob
+    )
 
-    st.subheader("🌎 Birth Information")
+    st.success(
+        f"🔮 On **{future_date.strftime('%d %B %Y')}**, "
+        f"you will be "
+        f"**{future_age.years} years, "
+        f"{future_age.months} months and "
+        f"{future_age.days} days old.**"
+    )
 
-    st.write(f"👶 Birth Year: **{birth_year}**")
-    st.write(f"📅 Birth Date: **{dob.strftime('%d %B %Y')}**")
-    st.write(f"📆 Birth Day: **{birth_day_name}**")
+    # --------------------------------------------------
+    # FUTURE AGE TABLE
+    # --------------------------------------------------
 
+    st.write("### 📅 Future Age Milestones")
+
+    future_ages = [25, 30, 40, 50, 60, 70, 80, 90, 100]
+
+    for target_age in future_ages:
+
+        milestone_date = date(
+            birth_year + target_age,
+            dob.month,
+            dob.day
+        )
+
+        if milestone_date > today:
+
+            st.write(
+                f"🎯 Age **{target_age}** → "
+                f"**{milestone_date.strftime('%d %B %Y')}**"
+            )
     # -----------------------------
     # COMPLETION MESSAGE
     # -----------------------------

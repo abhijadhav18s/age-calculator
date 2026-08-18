@@ -4,11 +4,11 @@ from datetime import date
 
 st.set_page_config(
     page_title="Smart Age & Life Analyzer",
-    page_icon="",
+    page_icon="🎂",
     layout="centered"
 )
 
-st.title(" Smart Age & Life Analyzer")
+st.title("🎂 Smart Age & Life Analyzer")
 st.write("Calculate your exact age, birthday countdown, and generate your life timeline.")
 
 # -----------------------------
@@ -108,143 +108,61 @@ if st.button("🚀 Analyze My Age"):
         f"{dob.strftime('%d %B %Y')}."
     )
 
-    st.subheader("📈 Life Progress")
+    # -----------------------------
+    # LIFE TIMELINE
+    # -----------------------------
 
-    lifespan = st.slider(
-        "🎯 Select your target lifespan",
-        min_value=50,
-        max_value=120,
-        value=100,
-        step=1
-    )
+    st.subheader("🕰️ Your Life Timeline")
 
-    # Exact number of days in selected lifespan
-    lifespan_end_date = date(
-        dob.year + lifespan,
-        dob.month,
-        dob.day
-    )
+    birth_year = dob.year
 
-    total_lifespan_days = (
-        lifespan_end_date - dob
-    ).days
-
-    days_lived = (
-        today - dob
-    ).days
-
-    # Calculate percentage
-    life_percentage = (
-        days_lived / total_lifespan_days
-    ) * 100
-
-    # Keep percentage between 0 and 100
-    life_percentage = max(
-        0,
-        min(life_percentage, 100)
-    )
-
-    st.progress(
-        int(life_percentage)
-    )
-
+    # Birth
     st.write(
-        f"### {life_percentage:.2f}%"
+        f"**{birth_year}** ─── Born 👶"
     )
 
-    st.write(
-        f"You have completed approximately "
-        f"**{life_percentage:.2f}%** of your selected "
-        f"{lifespan}-year lifespan."
-    )
+    # Started school
+    school_year = birth_year + 6
 
-    if today < lifespan_end_date:
-
-        remaining_days = (
-            lifespan_end_date - today
-        ).days
-
-        remaining_age = relativedelta(
-            lifespan_end_date,
-            today
-        )
-
-        st.info(
-            f"🌱 Approximately **{remaining_age.years} years, "
-            f"{remaining_age.months} months and "
-            f"{remaining_age.days} days** remaining "
-            f"until age {lifespan}."
-        )
-
+    if school_year <= today.year:
         st.write(
-            f"📅 Target date: "
-            f"**{lifespan_end_date.strftime('%d %B %Y')}**"
+            f"**{school_year}** ─── Started School 🎒"
         )
 
-    else:
+    # Completed school
+    school_completion_year = birth_year + 18
 
-        st.success(
-            f"🎉 You have already reached your selected "
-            f"{lifespan}-year milestone."
+    if school_completion_year <= today.year:
+        st.write(
+            f"**{school_completion_year}** ─── Completed School 🎓"
         )
 
-    # --------------------------------------------------
-    # FUTURE AGE CALCULATOR
-    # --------------------------------------------------
+    # College
+    college_year = birth_year + 18
 
-    st.subheader("🔮 Future Age Calculator")
-
-    future_year = st.number_input(
-        "📅 Enter the year you want to check",
-        min_value=today.year,
-        max_value=2200,
-        value=today.year + 10,
-        step=1
-    )
-
-    # Calculate exact future date
-    future_date = date(
-        int(future_year),
-        dob.month,
-        dob.day
-    )
-
-    # Calculate exact age on that date
-    future_age = relativedelta(
-        future_date,
-        dob
-    )
-
-    st.success(
-        f"🔮 On **{future_date.strftime('%d %B %Y')}**, "
-        f"you will be "
-        f"**{future_age.years} years, "
-        f"{future_age.months} months and "
-        f"{future_age.days} days old.**"
-    )
-
-    # --------------------------------------------------
-    # FUTURE AGE TABLE
-    # --------------------------------------------------
-
-    st.write("### 📅 Future Age Milestones")
-
-    future_ages = [25, 30, 40, 50, 60, 70, 80, 90, 100]
-
-    for target_age in future_ages:
-
-        milestone_date = date(
-            birth_year + target_age,
-            dob.month,
-            dob.day
+    if college_year <= today.year:
+        st.write(
+            f"**{college_year}** ─── Started College 🏫"
         )
 
-        if milestone_date > today:
+    # Current age
+    st.write(
+        f"**{today.year}** ─── Current Age: "
+        f"{age.years} 🎯"
+    )
 
-            st.write(
-                f"🎯 Age **{target_age}** → "
-                f"**{milestone_date.strftime('%d %B %Y')}**"
-            )
+   
+
+    # -----------------------------
+    # BIRTH YEAR SUMMARY
+    # -----------------------------
+
+    st.subheader("🌎 Birth Information")
+
+    st.write(f"👶 Birth Year: **{birth_year}**")
+    st.write(f"📅 Birth Date: **{dob.strftime('%d %B %Y')}**")
+    st.write(f"📆 Birth Day: **{birth_day_name}**")
+
     # -----------------------------
     # COMPLETION MESSAGE
     # -----------------------------

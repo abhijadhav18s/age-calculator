@@ -1,32 +1,41 @@
 import streamlit as st
-from datetime import date, datetime
+from datetime import date
 import calendar
-import math
 
 
-# ---------------------------------------------------------
-# PAGE CONFIGURATION
-# ---------------------------------------------------------
+# =========================================================
+# PAGE CONFIG
+# =========================================================
+
 st.set_page_config(
     page_title="Age Calculator",
-    page_icon="🎂",
+    page_icon="",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
 
-# ---------------------------------------------------------
-# CUSTOM CSS - MOBILE + DESKTOP RESPONSIVE
-# ---------------------------------------------------------
+# =========================================================
+# RESPONSIVE CSS
+# Works with Streamlit Light + Dark Mode
+# =========================================================
+
 st.markdown("""
 <style>
-    /* Main page */
+
+    /* ================================
+       GENERAL
+    ================================= */
+
     .main {
         padding-top: 1rem;
         padding-bottom: 2rem;
     }
 
-    /* Main title */
+    /* ================================
+       TITLE
+    ================================= */
+
     .title {
         text-align: center;
         font-size: 42px;
@@ -37,18 +46,27 @@ st.markdown("""
     .subtitle {
         text-align: center;
         font-size: 17px;
-        color: #777;
+        opacity: 0.70;
         margin-bottom: 25px;
     }
 
-    /* Cards */
+    /* ================================
+       CARDS
+       Uses Streamlit theme variables
+    ================================= */
+
     .card {
         padding: 22px;
         border-radius: 18px;
-        background: #ffffff;
-        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+
+        background-color: var(--background-color);
+
+        border: 1px solid var(--secondary-background-color);
+
+        box-shadow:
+            0 4px 18px rgba(0, 0, 0, 0.08);
+
         margin-bottom: 20px;
-        border: 1px solid #eeeeee;
     }
 
     .card-title {
@@ -57,7 +75,10 @@ st.markdown("""
         margin-bottom: 15px;
     }
 
-    /* Result numbers */
+    /* ================================
+       AGE RESULT
+    ================================= */
+
     .result-number {
         font-size: 30px;
         font-weight: 700;
@@ -66,22 +87,33 @@ st.markdown("""
 
     .result-label {
         text-align: center;
-        color: #777;
+        opacity: 0.65;
         font-size: 14px;
     }
 
-    /* Countdown */
+    /* ================================
+       COUNTDOWN
+    ================================= */
+
     .countdown {
         text-align: center;
+
         font-size: 28px;
         font-weight: 700;
+
         padding: 15px;
+
         border-radius: 15px;
-        background: #f5f7ff;
+
+        background-color: var(--secondary-background-color);
+
         margin-top: 10px;
     }
 
-    /* BMI */
+    /* ================================
+       BMI
+    ================================= */
+
     .bmi-value {
         text-align: center;
         font-size: 42px;
@@ -95,7 +127,22 @@ st.markdown("""
         margin-bottom: 10px;
     }
 
-    /* Buttons */
+    /* ================================
+       STREAMLIT INPUTS
+    ================================= */
+
+    div[data-baseweb="input"] {
+        background-color: var(--secondary-background-color);
+    }
+
+    div[data-baseweb="select"] > div {
+        background-color: var(--secondary-background-color);
+    }
+
+    /* ================================
+       BUTTON
+    ================================= */
+
     .stButton > button {
         width: 100%;
         border-radius: 12px;
@@ -104,8 +151,17 @@ st.markdown("""
         font-weight: 600;
     }
 
-    /* Mobile */
+    /* ================================
+       MOBILE
+    ================================= */
+
     @media (max-width: 600px) {
+
+        .main {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
         .title {
             font-size: 31px;
         }
@@ -127,6 +183,10 @@ st.markdown("""
             font-size: 25px;
         }
 
+        .result-label {
+            font-size: 13px;
+        }
+
         .countdown {
             font-size: 21px;
         }
@@ -134,25 +194,28 @@ st.markdown("""
         .bmi-value {
             font-size: 35px;
         }
+
+        .bmi-status {
+            font-size: 18px;
+        }
     }
+
 </style>
 """, unsafe_allow_html=True)
 
 
-# ---------------------------------------------------------
+# =========================================================
 # FUNCTIONS
-# ---------------------------------------------------------
+# =========================================================
 
 def calculate_age(birth_date, today):
-    """
-    Calculate exact age in years, months and days.
-    """
 
     years = today.year - birth_date.year
     months = today.month - birth_date.month
     days = today.day - birth_date.day
 
     if days < 0:
+
         months -= 1
 
         previous_month = today.month - 1
@@ -171,6 +234,7 @@ def calculate_age(birth_date, today):
         days += days_in_previous_month
 
     if months < 0:
+
         years -= 1
         months += 12
 
@@ -178,15 +242,19 @@ def calculate_age(birth_date, today):
 
 
 def calculate_total_days(birth_date, today):
+
     return (today - birth_date).days
 
 
 def calculate_total_months(birth_date, today):
-    years, months, days = calculate_age(birth_date, today)
+
+    years, months, days = calculate_age(
+        birth_date,
+        today
+    )
 
     total_months = years * 12 + months
 
-    # Add partial month approximately
     if days > 0:
         total_months += days / 30.4375
 
@@ -194,40 +262,55 @@ def calculate_total_months(birth_date, today):
 
 
 def calculate_birthday_countdown(birth_date, today):
-    """
-    Calculate days until next birthday.
-    """
 
     current_year = today.year
 
     try:
+
         next_birthday = date(
             current_year,
             birth_date.month,
             birth_date.day
         )
+
     except ValueError:
-        # Handles February 29
-        next_birthday = date(current_year, 2, 28)
+
+        # February 29
+        next_birthday = date(
+            current_year,
+            2,
+            28
+        )
 
     if next_birthday <= today:
+
         next_year = current_year + 1
 
         try:
+
             next_birthday = date(
                 next_year,
                 birth_date.month,
                 birth_date.day
             )
-        except ValueError:
-            next_birthday = date(next_year, 2, 28)
 
-    days_left = (next_birthday - today).days
+        except ValueError:
+
+            next_birthday = date(
+                next_year,
+                2,
+                28
+            )
+
+    days_left = (
+        next_birthday - today
+    ).days
 
     return next_birthday, days_left
 
 
 def calculate_bmi(weight, height_cm):
+
     height_m = height_cm / 100
 
     if height_m <= 0:
@@ -237,19 +320,23 @@ def calculate_bmi(weight, height_cm):
 
 
 def bmi_category(bmi):
+
     if bmi < 18.5:
         return "Underweight"
+
     elif bmi < 25:
         return "Normal weight"
+
     elif bmi < 30:
         return "Overweight"
+
     else:
         return "Obesity"
 
 
-# ---------------------------------------------------------
+# =========================================================
 # HEADER
-# ---------------------------------------------------------
+# =========================================================
 
 st.markdown(
     '<div class="title">Age Calculator</div>',
@@ -257,17 +344,20 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="subtitle">Calculate your exact age, birthday countdown and BMI</div>',
+    '<div class="subtitle">'
+    'Calculate your exact age, birthday countdown and BMI'
+    '</div>',
     unsafe_allow_html=True
 )
 
 
-# ---------------------------------------------------------
-# INPUT SECTION
-# ---------------------------------------------------------
+# =========================================================
+# DATE OF BIRTH
+# =========================================================
 
 st.markdown(
-    '<div class="card"><div class="card-title">📅 Enter Your Date of Birth</div>',
+    '<div class="card">'
+    '<div class="card-title">Enter Your Date of Birth</div>',
     unsafe_allow_html=True
 )
 
@@ -278,18 +368,24 @@ birth_date = st.date_input(
     max_value=date.today()
 )
 
-st.markdown("</div>", unsafe_allow_html=True)
+st.markdown(
+    '</div>',
+    unsafe_allow_html=True
+)
 
 
-# ---------------------------------------------------------
+# =========================================================
 # CALCULATIONS
-# ---------------------------------------------------------
+# =========================================================
 
 today = date.today()
 
+
 if birth_date > today:
 
-    st.error("Date of birth cannot be in the future.")
+    st.error(
+        "Date of birth cannot be in the future."
+    )
 
 else:
 
@@ -310,71 +406,98 @@ else:
 
     total_years = total_days / 365.2425
 
-    next_birthday, birthday_days = calculate_birthday_countdown(
-        birth_date,
-        today
+    next_birthday, birthday_days = (
+        calculate_birthday_countdown(
+            birth_date,
+            today
+        )
     )
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # EXACT AGE
-    # -----------------------------------------------------
+    # =====================================================
 
     st.markdown(
-        '<div class="card"><div class="card-title">🎯 Your Exact Age</div>',
+        '<div class="card">'
+        '<div class="card-title">Your Exact Age</div>',
         unsafe_allow_html=True
     )
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
+
         st.markdown(
             f"""
-            <div class="result-number">{years}</div>
-            <div class="result-label">Years</div>
+            <div class="result-number">
+                {years}
+            </div>
+
+            <div class="result-label">
+                Years
+            </div>
             """,
             unsafe_allow_html=True
         )
 
     with col2:
+
         st.markdown(
             f"""
-            <div class="result-number">{months}</div>
-            <div class="result-label">Months</div>
+            <div class="result-number">
+                {months}
+            </div>
+
+            <div class="result-label">
+                Months
+            </div>
             """,
             unsafe_allow_html=True
         )
 
     with col3:
+
         st.markdown(
             f"""
-            <div class="result-number">{days}</div>
-            <div class="result-label">Days</div>
+            <div class="result-number">
+                {days}
+            </div>
+
+            <div class="result-label">
+                Days
+            </div>
             """,
             unsafe_allow_html=True
         )
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
 
 
-    # -----------------------------------------------------
-    # TOTAL TIME LIVED
-    # -----------------------------------------------------
+    # =====================================================
+    # TIME SINCE BIRTH
+    # =====================================================
 
     st.markdown(
-        '<div class="card"><div class="card-title">⏳ Time Since Your Birth</div>',
+        '<div class="card">'
+        '<div class="card-title">Time Since Your Birth</div>',
         unsafe_allow_html=True
     )
 
     col1, col2 = st.columns(2)
 
     with col1:
+
         st.metric(
             "Total Days",
             f"{total_days:,}"
         )
 
     with col2:
+
         st.metric(
             "Total Months",
             f"{total_months:,.1f}"
@@ -385,50 +508,64 @@ else:
         f"{total_years:,.2f}"
     )
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # BIRTHDAY COUNTDOWN
-    # -----------------------------------------------------
+    # =====================================================
 
     st.markdown(
-        '<div class="card"><div class="card-title">🎉 Birthday Countdown</div>',
+        '<div class="card">'
+        '<div class="card-title">Birthday Countdown</div>',
         unsafe_allow_html=True
     )
 
     if birthday_days == 0:
-        st.success("🎂 Happy Birthday! Have a wonderful day!")
+
+        st.success(
+            "Happy Birthday! Have a wonderful day!"
+        )
 
     else:
+
         st.markdown(
             f"""
             <div class="countdown">
-                🎈 {birthday_days} days to go
+                 {birthday_days} days to go
             </div>
             """,
             unsafe_allow_html=True
         )
 
         st.write(
-            f"Your next birthday: **{next_birthday.strftime('%d %B %Y')}**"
+            f"Your next birthday: "
+            f"**{next_birthday.strftime('%d %B %Y')}**"
         )
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
 
 
-    # -----------------------------------------------------
-    # BMI CALCULATOR
-    # -----------------------------------------------------
+    # =====================================================
+    # BMI
+    # =====================================================
 
     st.markdown(
-        '<div class="card"><div class="card-title">⚖️ BMI Calculator</div>',
+        '<div class="card">'
+        '<div class="card-title">⚖️ BMI Calculator</div>',
         unsafe_allow_html=True
     )
 
     col1, col2 = st.columns(2)
 
     with col1:
+
         weight = st.number_input(
             "Weight (kg)",
             min_value=1.0,
@@ -438,6 +575,7 @@ else:
         )
 
     with col2:
+
         height = st.number_input(
             "Height (cm)",
             min_value=50.0,
@@ -455,28 +593,36 @@ else:
 
     st.markdown(
         f"""
-        <div class="bmi-value">{bmi:.1f}</div>
-        <div class="bmi-status">{category}</div>
+        <div class="bmi-value">
+            {bmi:.1f}
+        </div>
+
+        <div class="bmi-status">
+            {category}
+        </div>
         """,
         unsafe_allow_html=True
     )
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
 
 
-# ---------------------------------------------------------
+# =========================================================
 # FOOTER
-# ---------------------------------------------------------
+# =========================================================
 
 st.markdown(
     """
     <div style="
         text-align:center;
-        color:#888;
+        opacity:0.55;
         font-size:13px;
         padding:15px;
     ">
-        Age Calculator • Built with Python & Streamlit
+        Age Calculator • Python + Streamlit
     </div>
     """,
     unsafe_allow_html=True

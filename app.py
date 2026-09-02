@@ -1,19 +1,21 @@
 import streamlit as st
+import textwrap
 from datetime import date
 import calendar
 
 
-# =========================================================
-# PAGE CONFIG
-# =========================================================
-
 st.set_page_config(
     page_title="Age Calculator",
     page_icon="🎂",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="wide"
 )
 
+
+def render_html(html):
+    st.markdown(
+        textwrap.dedent(html).strip(),
+        unsafe_allow_html=True
+    )
 
 # =========================================================
 # CUSTOM CSS

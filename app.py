@@ -1,8 +1,6 @@
 import streamlit as st
 from datetime import date
 import calendar
-import textwrap
-
 
 # =========================================================
 # PAGE CONFIG
@@ -11,201 +9,130 @@ import textwrap
 st.set_page_config(
     page_title="Age Calculator",
     page_icon="🎂",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="wide"
 )
 
-
 # =========================================================
-# HTML HELPER
-# Prevents indentation from becoming Markdown code
+# CSS
 # =========================================================
 
-def html(content):
-    st.markdown(
-        textwrap.dedent(content).strip(),
-        unsafe_allow_html=True
-    )
-
-
-# =========================================================
-# PROFESSIONAL CSS
-# Light + Dark Mode Compatible
-# =========================================================
-
-st.markdown(
-    """
+st.html("""
 <style>
 
-:root {
-    --purple: #7c3aed;
-    --blue: #1683ea;
-    --green: #16a34a;
-    --orange: #f59e0b;
-    --pink: #ec4899;
-    --border: rgba(128,128,128,0.22);
-}
-
-
-/* =====================================================
-   MAIN PAGE
-===================================================== */
-
-.block-container {
-    max-width: 1100px;
-    padding-top: 1.5rem;
-    padding-bottom: 1rem;
-}
-
-
-/* =====================================================
-   HERO
-===================================================== */
-
-.hero {
+.main-title {
     text-align: center;
-    padding: 10px 10px 28px 10px;
+    margin-top: 10px;
+    margin-bottom: 30px;
 }
 
-.hero-icon {
-    font-size: 52px;
-    line-height: 1;
-    margin-bottom: 8px;
+.main-title .emoji {
+    font-size: 48px;
 }
 
-.hero-title {
+.main-title h1 {
     font-size: 46px;
     font-weight: 800;
-    letter-spacing: -1.5px;
-    line-height: 1.1;
+    margin: 5px 0;
 }
 
-.hero-subtitle {
-    margin-top: 8px;
-    font-size: 17px;
+.main-title p {
+    font-size: 16px;
     opacity: 0.65;
+    margin: 0;
 }
 
-.hero-line {
-    width: 150px;
+.title-line {
+    width: 140px;
     height: 3px;
     margin: 14px auto 0 auto;
     border-radius: 20px;
-    background: linear-gradient(
-        90deg,
-        var(--purple),
-        var(--pink)
-    );
+    background: linear-gradient(90deg, #7c3aed, #ec4899);
 }
 
 
-/* =====================================================
-   SECTION TITLE
-===================================================== */
+/* Cards */
 
-.section-title {
+.card-title {
     display: flex;
     align-items: center;
     gap: 10px;
     font-size: 19px;
-    font-weight: 750;
-    margin-bottom: 12px;
+    font-weight: 700;
+    margin-bottom: 15px;
 }
-
-.section-description {
-    font-size: 13px;
-    opacity: 0.60;
-    margin-top: -7px;
-    margin-bottom: 12px;
-}
-
-
-/* =====================================================
-   ICON
-===================================================== */
 
 .icon {
     width: 38px;
     height: 38px;
-    min-width: 38px;
+    border-radius: 12px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 12px;
     font-size: 19px;
 }
 
-.icon-purple {
-    background: rgba(124,58,237,0.14);
+.purple {
+    background: rgba(124, 58, 237, 0.14);
 }
 
-.icon-blue {
-    background: rgba(22,131,234,0.14);
+.orange {
+    background: rgba(245, 158, 11, 0.14);
 }
 
-.icon-green {
-    background: rgba(22,163,74,0.14);
+.pink {
+    background: rgba(236, 72, 153, 0.14);
 }
 
-.icon-orange {
-    background: rgba(245,158,11,0.15);
-}
-
-.icon-pink {
-    background: rgba(236,72,153,0.14);
+.green {
+    background: rgba(22, 163, 74, 0.14);
 }
 
 
-/* =====================================================
-   AGE RESULT BOXES
-===================================================== */
+/* Exact age */
 
 .age-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 10px;
 }
 
 .age-box {
     text-align: center;
-    padding: 18px 8px;
+    padding: 18px 5px;
     border-radius: 14px;
 
-    background: var(--background-color);
-
-    border: 1px solid var(--border);
+    background: rgba(128,128,128,0.06);
+    border: 1px solid rgba(128,128,128,0.18);
 }
 
 .age-number {
-    font-size: 32px;
+    font-size: 31px;
     font-weight: 800;
 }
 
 .age-label {
-    margin-top: 6px;
-    font-size: 11px;
-    font-weight: 650;
-    opacity: 0.60;
+    font-size: 10px;
+    font-weight: 700;
+    opacity: 0.6;
+    margin-top: 5px;
 }
 
 .age-purple {
-    color: var(--purple);
+    color: #7c3aed;
 }
 
 .age-blue {
-    color: var(--blue);
+    color: #1683ea;
 }
 
 .age-green {
-    color: var(--green);
+    color: #16a34a;
 }
 
 
-/* =====================================================
-   TIME STATISTICS
-===================================================== */
+/* Time statistics */
 
 .stats-grid {
     display: grid;
@@ -215,205 +142,144 @@ st.markdown(
 
 .stat-box {
     text-align: center;
-    padding: 17px 7px;
+    padding: 15px 5px;
 
-    background: var(--background-color);
-
-    border: 1px solid var(--border);
     border-radius: 14px;
+
+    background: rgba(128,128,128,0.06);
+    border: 1px solid rgba(128,128,128,0.18);
 }
 
 .stat-icon {
     font-size: 20px;
-    margin-bottom: 5px;
 }
 
 .stat-value {
-    font-size: 21px;
+    font-size: 20px;
     font-weight: 800;
+    margin-top: 3px;
 }
 
 .stat-label {
-    font-size: 10px;
-    font-weight: 650;
-    opacity: 0.60;
+    font-size: 9px;
+    font-weight: 700;
+    opacity: 0.6;
     margin-top: 4px;
 }
 
 .stat-orange {
-    color: var(--orange);
+    color: #f59e0b;
 }
 
 .stat-blue {
-    color: var(--blue);
+    color: #1683ea;
 }
 
 .stat-green {
-    color: var(--green);
+    color: #16a34a;
 }
 
 
-/* =====================================================
-   BIRTHDAY COUNTDOWN
-===================================================== */
+/* Birthday */
 
 .birthday-box {
     text-align: center;
-    padding: 24px 12px;
+    padding: 22px 10px;
 
-    border-radius: 15px;
+    border-radius: 14px;
 
     background: rgba(236,72,153,0.07);
-
     border: 1px solid rgba(236,72,153,0.25);
 }
 
 .birthday-number {
-    font-size: 40px;
+    font-size: 38px;
     font-weight: 800;
-    color: var(--pink);
-    line-height: 1;
+    color: #ec4899;
 }
 
 .birthday-label {
     font-size: 13px;
-    margin-top: 7px;
     opacity: 0.65;
 }
 
 .birthday-date {
     text-align: center;
 
-    margin-top: 10px;
+    margin-top: 9px;
     padding: 8px;
 
     border-radius: 9px;
 
-    background: var(--background-color);
-
-    border: 1px solid var(--border);
+    background: rgba(128,128,128,0.06);
+    border: 1px solid rgba(128,128,128,0.18);
 
     font-size: 13px;
     font-weight: 600;
 }
 
 
-/* =====================================================
-   BMI
-===================================================== */
+/* BMI */
 
 .bmi-result {
-    min-height: 95px;
+    text-align: center;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    padding: 20px;
 
-    margin-top: 15px;
+    margin-top: 12px;
 
-    border-radius: 15px;
+    border-radius: 14px;
 
-    background: rgba(22,163,74,0.08);
-
+    background: rgba(22,163,74,0.07);
     border: 1px solid rgba(22,163,74,0.25);
 }
 
 .bmi-number {
-    font-size: 40px;
+    font-size: 38px;
     font-weight: 800;
-    color: var(--green);
+    color: #16a34a;
 }
 
 .bmi-category {
-    margin-top: 5px;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
-    color: var(--green);
+    color: #16a34a;
 }
 
 
-/* =====================================================
-   INPUTS
-===================================================== */
-
-div[data-baseweb="input"] {
-    border-radius: 10px;
-}
-
-div[data-baseweb="select"] > div {
-    border-radius: 10px;
-}
-
-label {
-    font-weight: 600 !important;
-}
-
-
-/* =====================================================
-   FOOTER
-===================================================== */
+/* Footer */
 
 .footer {
     text-align: center;
-    margin-top: 20px;
-    padding: 10px;
+    margin-top: 25px;
+    padding-bottom: 10px;
     font-size: 13px;
-    opacity: 0.50;
+    opacity: 0.5;
 }
 
 
-/* =====================================================
-   MOBILE
-===================================================== */
+/* Mobile */
 
-@media (max-width: 750px) {
+@media (max-width: 700px) {
 
-    .block-container {
-        padding-left: 0.8rem;
-        padding-right: 0.8rem;
-        padding-top: 1rem;
+    .main-title .emoji {
+        font-size: 42px;
     }
 
-    .hero {
-        padding-bottom: 20px;
+    .main-title h1 {
+        font-size: 32px;
     }
 
-    .hero-icon {
-        font-size: 43px;
-    }
-
-    .hero-title {
-        font-size: 33px;
-    }
-
-    .hero-subtitle {
+    .main-title p {
         font-size: 14px;
     }
 
-    .age-grid {
-        gap: 7px;
-    }
-
-    .age-box {
-        padding: 16px 4px;
-    }
-
     .age-number {
-        font-size: 26px;
-    }
-
-    .age-label {
-        font-size: 9px;
+        font-size: 25px;
     }
 
     .stats-grid {
         grid-template-columns: 1fr;
-        gap: 7px;
-    }
-
-    .stat-box {
-        padding: 13px;
     }
 
     .birthday-number {
@@ -421,38 +287,33 @@ label {
     }
 
     .bmi-number {
-        font-size: 36px;
-    }
-}
-
-
-/* =====================================================
-   SMALL PHONES
-===================================================== */
-
-@media (max-width: 420px) {
-
-    .hero-title {
-        font-size: 29px;
-    }
-
-    .hero-subtitle {
-        font-size: 13px;
-    }
-
-    .age-number {
-        font-size: 23px;
-    }
-
-    .age-label {
-        font-size: 8px;
+        font-size: 35px;
     }
 }
 
 </style>
-""",
-    unsafe_allow_html=True
-)
+""")
+
+
+# =========================================================
+# HEADER
+# =========================================================
+
+st.html("""
+<div class="main-title">
+
+    <div class="emoji">🎂</div>
+
+    <h1>Age Calculator</h1>
+
+    <p>
+        Discover your exact age, birthday countdown and BMI
+    </p>
+
+    <div class="title-line"></div>
+
+</div>
+""")
 
 
 # =========================================================
@@ -460,11 +321,13 @@ label {
 # =========================================================
 
 def calculate_age(birth_date, today):
+
     years = today.year - birth_date.year
     months = today.month - birth_date.month
     days = today.day - birth_date.day
 
     if days < 0:
+
         months -= 1
 
         previous_month = today.month - 1
@@ -480,21 +343,25 @@ def calculate_age(birth_date, today):
         )[1]
 
     if months < 0:
+
         years -= 1
         months += 12
 
     return years, months, days
 
 
-def next_birthday(birth_date, today):
+def get_next_birthday(birth_date, today):
 
     try:
+
         birthday = date(
             today.year,
             birth_date.month,
             birth_date.day
         )
+
     except ValueError:
+
         birthday = date(
             today.year,
             2,
@@ -504,12 +371,15 @@ def next_birthday(birth_date, today):
     if birthday <= today:
 
         try:
+
             birthday = date(
                 today.year + 1,
                 birth_date.month,
                 birth_date.day
             )
+
         except ValueError:
+
             birthday = date(
                 today.year + 1,
                 2,
@@ -519,50 +389,36 @@ def next_birthday(birth_date, today):
     return birthday
 
 
-def calculate_bmi(weight, height_cm):
-    height_m = height_cm / 100
+def calculate_bmi(weight, height):
+
+    height_m = height / 100
+
     return weight / (height_m ** 2)
 
 
-def bmi_category(bmi):
+def get_bmi_category(bmi):
 
     if bmi < 18.5:
         return "Underweight"
 
-    if bmi < 25:
+    elif bmi < 25:
         return "Normal weight"
 
-    if bmi < 30:
+    elif bmi < 30:
         return "Overweight"
 
-    return "Obesity"
+    else:
+        return "Obesity"
 
 
 # =========================================================
-# HERO
-# =========================================================
-
-html("""
-<div class="hero">
-    <div class="hero-icon">🎂</div>
-    <div class="hero-title">Age Calculator</div>
-    <div class="hero-subtitle">
-        Discover your exact age, birthday countdown and BMI
-    </div>
-    <div class="hero-line"></div>
-</div>
-""")
-
-
-# =========================================================
-# CURRENT DATE
+# DATE
 # =========================================================
 
 today = date.today()
 
 
 # =========================================================
-# TOP ROW
 # DATE OF BIRTH + EXACT AGE
 # =========================================================
 
@@ -580,19 +436,19 @@ with left:
 
     with st.container(border=True):
 
-        html("""
-        <div class="section-title">
-            <div class="icon icon-purple">📅</div>
+        st.html("""
+        <div class="card-title">
+            <div class="icon purple">📅</div>
             <div>Date of Birth</div>
         </div>
 
-        <div class="section-description">
+        <div style="font-size:13px;opacity:.6;margin-bottom:10px;">
             Select your date of birth
         </div>
         """)
 
         birth_date = st.date_input(
-            "Date of birth",
+            "Date of Birth",
             value=date(2000, 1, 1),
             min_value=date(1900, 1, 1),
             max_value=today,
@@ -604,50 +460,61 @@ with left:
 # EXACT AGE
 # =========================================================
 
+years, months, days = calculate_age(
+    birth_date,
+    today
+)
+
 with right:
 
     with st.container(border=True):
 
-        years, months, days = calculate_age(
-            birth_date,
-            today
-        )
-
-        html("""
-        <div class="section-title">
-            <div class="icon icon-purple">🎯</div>
+        st.html("""
+        <div class="card-title">
+            <div class="icon purple">🎯</div>
             <div>Your Exact Age</div>
         </div>
         """)
 
-        html(f"""
+        st.html(f"""
         <div class="age-grid">
 
             <div class="age-box">
+
                 <div class="age-number age-purple">
                     {years}
                 </div>
+
                 <div class="age-label">
                     YEARS
                 </div>
+
             </div>
 
+
             <div class="age-box">
+
                 <div class="age-number age-blue">
                     {months}
                 </div>
+
                 <div class="age-label">
                     MONTHS
                 </div>
+
             </div>
 
+
             <div class="age-box">
+
                 <div class="age-number age-green">
                     {days}
                 </div>
+
                 <div class="age-label">
                     DAYS
                 </div>
+
             </div>
 
         </div>
@@ -655,8 +522,7 @@ with right:
 
 
 # =========================================================
-# SECOND ROW
-# TIME SINCE BIRTH + BIRTHDAY COUNTDOWN
+# TOTAL TIME + BIRTHDAY
 # =========================================================
 
 left, right = st.columns(
@@ -669,63 +535,78 @@ left, right = st.columns(
 # TIME SINCE BIRTH
 # =========================================================
 
+total_days = (
+    today - birth_date
+).days
+
+total_months = (
+    years * 12 + months
+)
+
+if days > 0:
+    total_months += days / 30.4375
+
+total_years = (
+    total_days / 365.2425
+)
+
+
 with left:
 
     with st.container(border=True):
 
-        total_days = (
-            today - birth_date
-        ).days
-
-        total_months = (
-            years * 12 + months
-        )
-
-        if days > 0:
-            total_months += days / 30.4375
-
-        total_years = (
-            total_days / 365.2425
-        )
-
-        html("""
-        <div class="section-title">
-            <div class="icon icon-orange">⏳</div>
+        st.html("""
+        <div class="card-title">
+            <div class="icon orange">⏳</div>
             <div>Time Since Your Birth</div>
         </div>
         """)
 
-        html(f"""
+        st.html(f"""
         <div class="stats-grid">
 
             <div class="stat-box">
+
                 <div class="stat-icon">📅</div>
+
                 <div class="stat-value stat-orange">
                     {total_days:,}
                 </div>
+
                 <div class="stat-label">
                     TOTAL DAYS
                 </div>
+
             </div>
 
+
             <div class="stat-box">
+
                 <div class="stat-icon">📆</div>
+
                 <div class="stat-value stat-blue">
                     {total_months:,.1f}
                 </div>
+
                 <div class="stat-label">
                     TOTAL MONTHS
                 </div>
+
             </div>
 
+
             <div class="stat-box">
+
                 <div class="stat-icon">🕐</div>
+
                 <div class="stat-value stat-green">
                     {total_years:,.2f}
                 </div>
+
                 <div class="stat-label">
                     TOTAL YEARS
                 </div>
+
             </div>
 
         </div>
@@ -736,35 +617,46 @@ with left:
 # BIRTHDAY COUNTDOWN
 # =========================================================
 
+birthday = get_next_birthday(
+    birth_date,
+    today
+)
+
+days_left = (
+    birthday - today
+).days
+
+
 with right:
 
     with st.container(border=True):
 
-        birthday = next_birthday(
-            birth_date,
-            today
-        )
-
-        days_left = (
-            birthday - today
-        ).days
-
-        html("""
-        <div class="section-title">
-            <div class="icon icon-pink">🎉</div>
+        st.html("""
+        <div class="card-title">
+            <div class="icon pink">🎉</div>
             <div>Birthday Countdown</div>
         </div>
         """)
 
         if days_left == 0:
 
-            st.success(
-                "🎂 Happy Birthday! Have a wonderful day!"
-            )
+            st.html("""
+            <div class="birthday-box">
+
+                <div class="birthday-number">
+                    🎂
+                </div>
+
+                <div class="birthday-label">
+                    Happy Birthday!
+                </div>
+
+            </div>
+            """)
 
         else:
 
-            html(f"""
+            st.html(f"""
             <div class="birthday-box">
 
                 <div class="birthday-number">
@@ -784,22 +676,19 @@ with right:
 
 
 # =========================================================
-# BMI CALCULATOR
+# BMI
 # =========================================================
 
 with st.container(border=True):
 
-    html("""
-    <div class="section-title">
-        <div class="icon icon-purple">⚖️</div>
+    st.html("""
+    <div class="card-title">
+        <div class="icon green">⚖️</div>
         <div>BMI Calculator</div>
     </div>
     """)
 
-    col1, col2 = st.columns(
-        2,
-        gap="large"
-    )
+    col1, col2 = st.columns(2)
 
     with col1:
 
@@ -826,11 +715,11 @@ with st.container(border=True):
         height
     )
 
-    category = bmi_category(
+    category = get_bmi_category(
         bmi
     )
 
-    html(f"""
+    st.html(f"""
     <div class="bmi-result">
 
         <div class="bmi-number">
@@ -849,9 +738,8 @@ with st.container(border=True):
 # FOOTER
 # =========================================================
 
-html("""
+st.html("""
 <div class="footer">
-    💜 &nbsp; Age Calculator &nbsp; · &nbsp;
-    Built with Python & Streamlit
+    💜 Age Calculator · Built with Python & Streamlit
 </div>
 """)

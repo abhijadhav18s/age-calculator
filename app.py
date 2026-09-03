@@ -302,8 +302,6 @@ st.html("""
 st.html("""
 <div class="main-title">
 
-    <div class="emoji">🎂</div>
-
     <h1>Age Calculator</h1>
 
     <p>
